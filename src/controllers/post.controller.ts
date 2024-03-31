@@ -4,7 +4,9 @@ import { PostModel } from "../models";
 
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const posts = await PostModel.find().populate({ path: "author", select: "fullName email avatarUrl" }).exec();
+    const posts = await PostModel.find()
+      .populate({ path: "author", select: "firstName lastName email avatarUrl" })
+      .exec();
 
     res.status(200).json(
       posts.map(({ title, content, tags, author, viewCounts, imageUrl }) => ({
@@ -36,7 +38,7 @@ export const getOnePost = async (req: Request, res: Response) => {
           returnDocument: "after",
         }
       )
-        .populate({ path: "author", select: "fullName email avatarUrl" })
+        .populate({ path: "author", select: "firstName lastName email avatarUrl" })
         .exec();
 
       if (post) {

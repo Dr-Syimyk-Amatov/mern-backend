@@ -13,7 +13,8 @@ export const register = async (req: Request, res: Response) => {
     const passwordHash = await bcrypt.hash(password, salt);
     const doc = new UserModel({
       email: req.body.email,
-      fullName: req.body.fullName,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
       avatarUrl: req.body.avatarUrl,
       passwordHash: passwordHash,
     });
@@ -21,10 +22,11 @@ export const register = async (req: Request, res: Response) => {
 
     const token = jwt.sign({ _id: user._id }, SECRET, { expiresIn: "30d" });
     const resBody: RegisterUserResponse = {
-      fullName: doc.fullName,
-      email: doc.email,
-      avatarUrl: doc.avatarUrl,
       id: doc.id,
+      email: doc.email,
+      firstName: doc.firstName,
+      lastName: doc.lastName,
+      avatarUrl: doc.avatarUrl,
       token,
     };
     res.status(200).json(resBody);
@@ -51,6 +53,11 @@ export const login = async (req: Request, res: Response) => {
           { expiresIn: "30d" }
         );
         return res.status(200).json({
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          avatarUrl: user.avatarUrl,
           token,
         });
       }
@@ -71,8 +78,10 @@ export const getMe = async (req: Request, res: Response) => {
     const user = await UserModel.findById(res.locals.userId);
     if (user) {
       res.status(200).json({
-        fullName: user.fullName,
+        id: user.id,
         email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
         avatarUrl: user.avatarUrl,
       });
     } else {

@@ -1,8 +1,31 @@
 import mongoose from "mongoose";
+import { createToJSON } from "../utils";
 
-const UserSchema = new mongoose.Schema(
+interface UserModelType {
+  firstName: string;
+  lastName: string;
+  email: string;
+  passwordHash: string;
+  avatarUrl?: string;
+}
+
+const UserSchema = new mongoose.Schema<
+  UserModelType,
+  {},
+  {},
+  {},
+  {},
   {
-    fullName: {
+    hasUsersWithIds: (ids: string[]) => Promise<boolean>;
+    getUsersByIds: (ids: string[]) => Promise<any>;
+  }
+>(
+  {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
       type: String,
       required: true,
     },
@@ -19,6 +42,18 @@ const UserSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      ...createToJSON(),
+      virtuals: true,
+    },
+    statics: {
+      getUsersByIds(ids: string[]) {
+        return this.find({ _id: { $in: ids } });
+      },
+      hasUsersWithIds(ids: string[]) {
+        return this.find({ _id: { $in: ids } }).then((users) => users.every((user) => Boolean(user)));
+      },
+    },
   }
 );
 
