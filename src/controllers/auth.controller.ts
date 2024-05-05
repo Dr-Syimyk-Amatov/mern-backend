@@ -20,7 +20,7 @@ export const register = async (req: Request, res: Response) => {
     });
     const user = await doc.save();
 
-    const token = jwt.sign({ _id: user._id }, SECRET, { expiresIn: "30d" });
+    const token = jwt.sign({ _id: user._id }, SECRET, { expiresIn: "5h" });
     const resBody: RegisterUserResponse = {
       id: doc.id,
       email: doc.email,

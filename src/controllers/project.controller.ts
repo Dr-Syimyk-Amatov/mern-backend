@@ -13,7 +13,7 @@ export const getAllProjects = async (req: Request, res: Response) => {
 
     res.status(200).json(projects);
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       message: "Failed to get projects",
     });
   }
@@ -84,12 +84,12 @@ export const updateProject = async (req: Request, res: Response) => {
   try {
     if (req.params.id) {
       const userIds = Array.from(
-        new Set<string>((<string[]>req.body.userIds).filter((id) => id !== res.locals.userId))
+        new Set<string>((<string[]>req.body.users).filter((id) => id !== res.locals.userId))
       );
       console.log(
         userIds,
         res.locals.userId,
-        (<string[]>req.body.userIds).filter((id) => id !== res.locals.userId)
+        (<string[]>req.body.users).filter((id) => id !== res.locals.userId)
       );
       const hasUsers = await UserModel.hasUsersWithIds(userIds);
 
@@ -123,8 +123,10 @@ export const updateProject = async (req: Request, res: Response) => {
       message: "Failed to update post",
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       message: "Failed to update post",
+      error,
     });
   }
 };
@@ -150,5 +152,13 @@ export const deleteProject = async (req: Request, res: Response) => {
     res.status(500).json({
       message: "Failed to delete project",
     });
+  }
+};
+
+export const deleteStatus = async (req: Request, res: Response) => {
+  try {
+    res.sendStatus(200);
+  } catch (error) {
+    res.sendStatus(500);
   }
 };

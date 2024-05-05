@@ -1,9 +1,14 @@
 import { Request, Response } from "express";
 import { PriorityModel } from "../models";
+import { getSortOrderValue } from "../utils";
+import { SortOrder } from "../enums";
 
 export const getAllPriorities = async (req: Request, res: Response) => {
   try {
-    const priorities = await PriorityModel.find();
+    const sort = "sortKey" in req.params && "sortOrder" in req.params;
+    const sortDirection = getSortOrderValue(req.params.sortOrder as SortOrder);
+    const baseQuery = PriorityModel.find();
+    const priorities = await (sort ? baseQuery.sort({ [req.params.sortKey]: sortDirection }) : baseQuery);
 
     return res.status(200).json(priorities.map<string[]>((priority) => priority.toJSON()));
   } catch (error) {

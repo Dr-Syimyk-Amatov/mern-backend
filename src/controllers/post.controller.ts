@@ -156,11 +156,11 @@ export const deletePost = async (req: Request, res: Response) => {
     }
 
     res.status(500).json({
-      message: "Failed to update post",
+      message: "Failed to delete post",
     });
   } catch (error) {
     res.status(500).json({
-      message: "Failed to update post",
+      message: "Failed to delete post",
     });
   }
 };

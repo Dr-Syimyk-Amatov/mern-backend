@@ -1,3 +1,4 @@
+export * from "./book.model";
 export * from "./post.model";
 export * from "./priority.model";
 export * from "./project.model";

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import path from "path";
 import cors from "cors";
 
-import { authRouter, postsRouter, priorityRouter, projectRouter, uploadRouter } from "./routers";
+import { authRouter, booksRouter, postsRouter, priorityRouter, projectRouter, uploadRouter } from "./routers";
 
 const app = express();
 const port = 4444;
@@ -25,6 +25,7 @@ app.use("/posts", postsRouter);
 app.use("/upload", uploadRouter);
 app.use("/priority", priorityRouter);
 app.use("/projects", projectRouter);
+app.use("/books", booksRouter);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.listen(port, () => {
