@@ -1,14 +1,33 @@
 import { Request, Response } from "express";
+
 import { BookModel } from "../models";
+import { BookResponse } from "../interfaces/book.interface";
+import { Pagination } from "../interfaces";
 
 export const getAllBooks = async (req: Request, res: Response) => {
   try {
+    const { sortOrder, sortKey, hasSortParams, pageSize, pageIndex } = res.locals;
+    const totalCount: number = await BookModel.countDocuments();
+    const lastPageIndex: number = totalCount > 0 ? Math.ceil(totalCount / pageSize) : 1;
+    const properPageIndex = lastPageIndex >= pageIndex ? pageIndex : lastPageIndex;
     const books = await BookModel.find()
+      .sort(hasSortParams ? { [sortKey as string]: sortOrder } : null)
+      .skip((properPageIndex - 1) * pageSize)
+      .limit(pageSize)
       .populate({ path: "user", select: "firstName lastName email avatarUrl" })
       .exec();
 
-    res.status(200).json(books);
+    const entry: Pagination<BookResponse> = {
+      lastPageIndex,
+      pageIndex: properPageIndex,
+      pageSize,
+      totalCount,
+      data: books.map((book) => book.toObject()),
+    };
+
+    res.status(200).json(entry);
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       message: "Failed to get books",
     });
@@ -46,6 +65,7 @@ export const createBook = async (req: Request, res: Response) => {
       name: req.body.name,
       author: req.body.author,
       releaseDate: req.body.releaseDate,
+      publishYear: req.body.publishYear,
       pagesCount: req.body.pagesCount,
       user: res.locals.userId,
       fileUrl: req.body.fileUrl,
@@ -77,6 +97,7 @@ export const updateBook = async (req: Request, res: Response) => {
           name: req.body.name,
           author: req.body.author,
           releaseDate: req.body.releaseDate,
+          publishYear: req.body.publishYear,
           pagesCount: req.body.pagesCount,
           fileUrl: req.body.fileUrl,
         },

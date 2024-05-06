@@ -1,7 +1,17 @@
 import mongoose from "mongoose";
-import { createToJSON } from "../utils";
+import { createToJSON, createToObject } from "../utils";
 
-const bookSchema = new mongoose.Schema(
+export interface Book {
+  name: string;
+  user: mongoose.Schema.Types.ObjectId;
+  fileUrl?: string;
+  author?: string;
+  pagesCount?: string;
+  releaseDate?: string;
+  publishYear?: number;
+}
+
+const bookSchema = new mongoose.Schema<Book>(
   {
     name: {
       type: String,
@@ -16,6 +26,9 @@ const bookSchema = new mongoose.Schema(
     releaseDate: {
       type: Date,
     },
+    publishYear: {
+      type: Number,
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -27,6 +40,7 @@ const bookSchema = new mongoose.Schema(
   {
     timestamps: true,
     toJSON: createToJSON(),
+    toObject: createToObject(),
   }
 );
 

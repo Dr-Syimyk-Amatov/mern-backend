@@ -1,17 +1,16 @@
 import { Request, Response } from "express";
 import { PriorityModel } from "../models";
-import { getSortOrderValue } from "../utils";
-import { SortOrder } from "../enums";
 
 export const getAllPriorities = async (req: Request, res: Response) => {
   try {
-    const sort = "sortKey" in req.params && "sortOrder" in req.params;
-    const sortDirection = getSortOrderValue(req.params.sortOrder as SortOrder);
     const baseQuery = PriorityModel.find();
-    const priorities = await (sort ? baseQuery.sort({ [req.params.sortKey]: sortDirection }) : baseQuery);
+    const priorities = await (res.locals.hasSortParams
+      ? baseQuery.sort({ [req.query.sortKey as string]: res.locals.sortOrder })
+      : baseQuery);
 
     return res.status(200).json(priorities.map<string[]>((priority) => priority.toJSON()));
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       message: "Failed to get priorites",
     });
