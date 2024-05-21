@@ -5,3 +5,8 @@ export interface Pagination<T> {
   lastPageIndex: number;
   totalCount: number;
 }
+
+export interface PaginationParams {
+  pageSize: number;
+  pageIndex: number;
+}
